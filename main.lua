@@ -166,6 +166,7 @@ function love.keypressed(key, scancode, isrepeat)
   end
 end
 
+--convert from globalx x/y to map x/y
 function convert(v)
   return (v-v%tile_scale)/tile_scale
 end
