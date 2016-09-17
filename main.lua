@@ -144,26 +144,34 @@ function love.textinput(t)
 end
 
 function love.keypressed(key, scancode, isrepeat)
-  if key == "s" and not isrepeat then
-    level_editor:save_map()
-  elseif key == "o" and not isrepeat and not level_editor.is_loading_map then
-    level_editor.is_loading_map = true
-    first_time = true
-  elseif key == "return" then
-    if love.filesystem.exists("maps/" .. level_editor.map_name) then
-      level_editor:load_map(love.graphics.newImage("maps/" .. level_editor.map_name):getData())
-    else
-      print("WTF YOU TRYING TO READ MATE")
+
+  --can be done while editing
+  if not level_editor.is_loading_map then
+    if key == "s" and not isrepeat then
+      level_editor:save_map()
+
+    elseif key == "o" and not isrepeat then
+      level_editor.is_loading_map = true
+      first_time = true
     end
-    level_editor.map_name = ""
-    level_editor.is_loading_map = false
-  elseif key == "escape" then
-    level_editor.map_name = ""
-    level_editor.is_loading_map = false
   end
 
+  --can be done while typing in the map
   if level_editor.is_loading_map then
-    if key == "backspace" then
+    if key == "return" and not isrepeat then
+      if love.filesystem.exists("maps/" .. level_editor.map_name) then
+        level_editor:load_map(love.graphics.newImage("maps/" .. level_editor.map_name):getData())
+      else
+        print("WTF YOU TRYING TO READ MATE")
+      end
+      level_editor.map_name = ""
+      level_editor.is_loading_map = false
+
+    elseif key == "escape" then
+      level_editor.map_name = ""
+      level_editor.is_loading_map = false
+
+    elseif key == "backspace" then
       -- get the byte offset to the last UTF-8 character in the string.
       local byteoffset = utf8.offset(level_editor.map_name, -1)
 
@@ -202,6 +210,9 @@ end
 function level_editor:add_block(x, y, id)
   x = x+1
   y = y+1
+  if x < 1 or y < 1 then
+    return
+  end
   if not map[x] then
     map[x] = {}
   end
