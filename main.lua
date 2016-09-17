@@ -9,6 +9,9 @@ is_loading_map = false,
 map_name = ""
 }
 
+max_scale = 10
+min_scale = 0.1
+
 local sel_tile = 1
 local tile_scale = 8
 
@@ -83,21 +86,19 @@ function love.draw()
 end
 
 function love.wheelmoved(x, y)
-  maxScale = 10
-  minScale = 0.1
-  currentScale = 1
+  current_scale = 1
   if y > 0 then
-    currentScale = currentScale - 0.04
+    current_scale = current_scale - 0.04
   elseif y < 0 then
-    currentScale = currentScale + 0.04
+    current_scale = current_scale + 0.04
   end
-  if currentScale > maxScale then
-    currentScale = maxScale
+  if current_scale > max_scale then
+    current_scale = max_scale
   end
-  if currentScale < minScale then
-    currentScale = minScale
+  if current_scale < min_scale then
+    current_scale = min_scale
   end
-  camera:scale(currentScale, currentScale)
+  camera:scale(current_scale, current_scale)
 end
 
 function love.textinput(t)
@@ -123,7 +124,7 @@ function love.keypressed(key, scancode, isrepeat)
     level_editor.map_name = ""
     level_editor.is_loading_map = false
   end
-  
+
   if level_editor.is_loading_map then
     if key == "backspace" then
       -- get the byte offset to the last UTF-8 character in the string.
