@@ -32,19 +32,9 @@ end
 function love.update()
   if not rectangle.active then
     if love.mouse.isDown(1) then
-      if love.mouse.getY() > tile_scale and camera:mouseX()>0 and camera:mouseY()>0 then
-        temp_x, temp_y = camera:mousePosition()
-        temp_x = (temp_x-temp_x%tile_scale)
-        temp_y = (temp_y-temp_y%tile_scale)
-        level_editor:add_block(convert(camera:mouseX()), convert(camera:mouseY()), sel_tile)
-      end
+      level_editor:add_block(convert(camera:mouseX()), convert(camera:mouseY()), sel_tile)
     elseif love.mouse.isDown(2) then
-      if love.mouse.getY() > tile_scale and camera:mouseX()>0 and camera:mouseY()>0 then
-        temp_x, temp_y = camera:mousePosition()
-        temp_x = (temp_x-temp_x%tile_scale)
-        temp_y = (temp_y-temp_y%tile_scale)
-        level_editor:add_block(convert(camera:mouseX()), convert(camera:mouseY()), nil)
-      end
+      level_editor:add_block(convert(camera:mouseX()), convert(camera:mouseY()), nil)
     elseif love.mouse.isDown(3) then
       camera:move((level_editor.oldX-love.mouse.getX()) * camera.scaleX, (level_editor.oldY-love.mouse.getY()) * camera.scaleY)
     end
@@ -58,10 +48,12 @@ function love.draw()
   love.graphics.setBackgroundColor(255, 255, 255)
   love.graphics.setColor(0, 0, 0, 122)
 
+  --vertcal lines
   for i=0, love.graphics.getWidth()*camera.scaleX+camera.x, tile_scale do
     love.graphics.line(i, camera.y, i, love.graphics.getHeight()*camera.scaleY+camera.y)
   end
 
+  --horizontal lines
   for i=0, love.graphics.getHeight()*camera.scaleY+camera.y, tile_scale do
     love.graphics.line(camera.x, i, love.graphics.getWidth()*camera.scaleX+camera.x, i)
   end
