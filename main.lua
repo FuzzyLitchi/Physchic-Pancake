@@ -79,26 +79,38 @@ function love.draw()
     love.graphics.draw(v.image, v.x, v.y)
   end
 
-  love.graphics.setColor(255, 0, 255, 80)
-  love.graphics.rectangle("fill", camera:mouseX()-camera:mouseX()%tile_scale, camera:mouseY()-camera:mouseY()%tile_scale, tile_scale, tile_scale)
+  love.graphics.setColor(255, 0, 255, 200)
+  love.graphics.draw(level_editor.tiles[sel_tile].image, camera:mouseX()-camera:mouseX()%tile_scale, camera:mouseY()-camera:mouseY()%tile_scale)
 
   camera:unset()
 end
 
 function love.wheelmoved(x, y)
   current_scale = 1
-  if y > 0 then
-    current_scale = current_scale - 0.04
-  elseif y < 0 then
-    current_scale = current_scale + 0.04
+  if love.keyboard.isDown("lctrl") then
+    --zoom camera
+    if y > 0 then
+      current_scale = current_scale - 0.04
+    elseif y < 0 then
+      current_scale = current_scale + 0.04
+    end
+
+    if current_scale > max_scale then
+      current_scale = max_scale
+    end
+    if current_scale < min_scale then
+      current_scale = min_scale
+    end
+
+    camera:scale(current_scale, current_scale)
+  else
+    if y > 0 then
+      sel_tile = sel_tile - 1
+    elseif y < 0 then
+      sel_tile = sel_tile + 1
+    end
+    sel_tile = (sel_tile + 9) % #level_editor.tiles + 1
   end
-  if current_scale > max_scale then
-    current_scale = max_scale
-  end
-  if current_scale < min_scale then
-    current_scale = min_scale
-  end
-  camera:scale(current_scale, current_scale)
 end
 
 function love.textinput(t)
@@ -117,7 +129,11 @@ function love.keypressed(key, scancode, isrepeat)
     level_editor.is_loading_map = true
     first_time = true
   elseif key == "return" then
-    level_editor:load_map(love.graphics.newImage("maps/" .. level_editor.map_name):getData())
+    if love.filesystem.exists("maps/" .. level_editor.map_name) then
+      level_editor:load_map(love.graphics.newImage("maps/" .. level_editor.map_name):getData())
+    else
+      print("WTF YOU TRYING TO READ MATE")
+    end
     level_editor.map_name = ""
     level_editor.is_loading_map = false
   elseif key == "escape" then
