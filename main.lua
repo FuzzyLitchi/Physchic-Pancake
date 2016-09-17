@@ -9,9 +9,6 @@ is_loading_map = false,
 map_name = ""
 }
 
-max_scale = 10
-min_scale = 0.1
-
 local sel_tile = 1
 local tile_scale = 8
 
@@ -108,13 +105,6 @@ function love.wheelmoved(x, y)
       current_scale = current_scale - 0.04
     elseif y < 0 then
       current_scale = current_scale + 0.04
-    end
-
-    if current_scale > max_scale then
-      current_scale = max_scale
-    end
-    if current_scale < min_scale then
-      current_scale = min_scale
     end
 
     camera:scale(current_scale, current_scale)
