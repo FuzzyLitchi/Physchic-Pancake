@@ -16,7 +16,7 @@ local sel_tile = 1
 local tile_scale = 8
 
 local map = {}
-local rectangle = {x, y}
+local rectangle = {x, y, active}
 
 function love.load(main)
   camera = Camera:make(0, 0, 960 / love.graphics.getWidth(), 640 / love.graphics.getHeight(), 0)
@@ -30,22 +30,24 @@ function love.load(main)
 end
 
 function love.update()
-  if love.mouse.isDown(1) then
-    if love.mouse.getY() > tile_scale and camera:mouseX()>0 and camera:mouseY()>0 then
-      temp_x, temp_y = camera:mousePosition()
-      temp_x = (temp_x-temp_x%tile_scale)
-      temp_y = (temp_y-temp_y%tile_scale)
-      level_editor:add_block(convert(camera:mouseX()), convert(camera:mouseY()), sel_tile)
+  if not rectangle.active then
+    if love.mouse.isDown(1) then
+      if love.mouse.getY() > tile_scale and camera:mouseX()>0 and camera:mouseY()>0 then
+        temp_x, temp_y = camera:mousePosition()
+        temp_x = (temp_x-temp_x%tile_scale)
+        temp_y = (temp_y-temp_y%tile_scale)
+        level_editor:add_block(convert(camera:mouseX()), convert(camera:mouseY()), sel_tile)
+      end
+    elseif love.mouse.isDown(2) then
+      if love.mouse.getY() > tile_scale and camera:mouseX()>0 and camera:mouseY()>0 then
+        temp_x, temp_y = camera:mousePosition()
+        temp_x = (temp_x-temp_x%tile_scale)
+        temp_y = (temp_y-temp_y%tile_scale)
+        level_editor:add_block(convert(camera:mouseX()), convert(camera:mouseY()), nil)
+      end
+    elseif love.mouse.isDown(3) then
+      camera:move((level_editor.oldX-love.mouse.getX()) * camera.scaleX, (level_editor.oldY-love.mouse.getY()) * camera.scaleY)
     end
-  elseif love.mouse.isDown(2) then
-    if love.mouse.getY() > tile_scale and camera:mouseX()>0 and camera:mouseY()>0 then
-      temp_x, temp_y = camera:mousePosition()
-      temp_x = (temp_x-temp_x%tile_scale)
-      temp_y = (temp_y-temp_y%tile_scale)
-      level_editor:add_block(convert(camera:mouseX()), convert(camera:mouseY()), nil)
-    end
-  elseif love.mouse.isDown(3) then
-    camera:move((level_editor.oldX-love.mouse.getX()) * camera.scaleX, (level_editor.oldY-love.mouse.getY()) * camera.scaleY)
   end
   level_editor.oldX = love.mouse.getX()
   level_editor.oldY = love.mouse.getY()
@@ -73,7 +75,15 @@ function love.draw()
   end
 
   love.graphics.setColor(255, 0, 255, 200)
-  love.graphics.draw(level_editor.tiles[sel_tile].image, camera:mouseX()-camera:mouseX()%tile_scale, camera:mouseY()-camera:mouseY()%tile_scale)
+  if rectangle.active then
+    for x = smallest(convert(rectangle.x), convert(camera:mouseX())), biggest(convert(rectangle.x), convert(camera:mouseX())) do
+      for y = smallest(convert(rectangle.y), convert(camera:mouseY())), biggest(convert(rectangle.y), convert(camera:mouseY())) do
+        love.graphics.draw(level_editor.tiles[sel_tile].image, x*tile_scale, y*tile_scale)
+      end
+    end
+  else
+    love.graphics.draw(level_editor.tiles[sel_tile].image, camera:mouseX()-camera:mouseX()%tile_scale, camera:mouseY()-camera:mouseY()%tile_scale)
+  end
 
   camera:unset()
 
@@ -85,15 +95,17 @@ function love.mousepressed(x, y, button, isTouch)
   if love.keyboard.isDown("lshift") and (button==1 or button==2) then
     rectangle.x = camera:mouseX()
     rectangle.y = camera:mouseY()
+    rectangle.active = true
   end
 end
 
 function love.mousereleased(x, y, button, isTouch)
-  if love.keyboard.isDown("lshift") and button==1 then
+  if love.keyboard.isDown("lshift") and button==1 and rectangle.active then
     level_editor:fill(convert(rectangle.x), convert(rectangle.y), convert(camera:mouseX()), convert(camera:mouseY()), sel_tile)
-  elseif love.keyboard.isDown("lshift") and button==2 then
+  elseif love.keyboard.isDown("lshift") and button==2  and rectangle.active then
     level_editor:fill(convert(rectangle.x), convert(rectangle.y), convert(camera:mouseX()), convert(camera:mouseY()), nil)
   end
+  rectangle.active = false
 end
 
 function love.wheelmoved(x, y)
@@ -168,6 +180,20 @@ function convert(v)
   return (v-v%tile_scale)/tile_scale
 end
 
+function smallest (v1, v2)
+  if v1 <= v2 then
+    return v1
+  end
+  return v2
+end
+
+function biggest (v1, v2)
+  if v1 >= v2 then
+    return v1
+  end
+  return v2
+end
+
 function level_editor:add_tile(r, g, b, image)
   local temp_image = love.graphics.newImage("src/" .. image)
   table.insert(level_editor.tiles, {r=r, g=g, b=b, image = temp_image, width = tile_scale, height = tile_scale})
@@ -183,8 +209,8 @@ function level_editor:add_block(x, y, id)
 end
 
 function level_editor:fill (x1, y1, x2, y2, id)
-  for x = x1, x2 do
-    for y = y1, y2 do
+  for x = smallest(x1, x2), biggest(x1, x2)do
+    for y = smallest(y1, y2), biggest(y1, y2) do
       level_editor:add_block(x, y, id)
     end
   end
