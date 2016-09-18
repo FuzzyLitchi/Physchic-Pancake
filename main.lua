@@ -1,7 +1,7 @@
 local Camera = require "camera"
 local utf8 = require("utf8")
 
-level_editor =
+local level_editor =
 {boxes = {},
 tiles = {},
 oldX=0, oldY=0,
@@ -10,10 +10,13 @@ map_name = ""
 }
 
 local sel_tile = 1
+local sel_shape = 1
 local tile_scale = 8
 
 local map = {}
-local rectangle = {x, y, active}
+local shapes = {x, y, active}
+local shapes_func = {}
+local highlight_func = {}
 
 function love.load(main)
   camera = Camera:make(0, 0, 960 / love.graphics.getWidth(), 640 / love.graphics.getHeight(), 0)
@@ -21,13 +24,17 @@ function love.load(main)
   love.graphics.setDefaultFilter("nearest", "nearest")
   love.keyboard.setKeyRepeat(true)
 
+  --load shapes
+  table.insert(shapes_func, fill)
+  table.insert(highlight_func, fill_highlight)
+
   --load tiles
   level_editor:add_tile(0, 0, 0, "banker.png")
   level_editor:add_tile(255, 255, 0, "julian.png")
 end
 
 function love.update()
-  if not rectangle.active then
+  if not shapes.active then
     if love.mouse.isDown(1) then
       level_editor:add_block(convert(camera:mouseX()), convert(camera:mouseY()), sel_tile)
     elseif love.mouse.isDown(2) then
@@ -64,12 +71,8 @@ function love.draw()
   end
 
   love.graphics.setColor(255, 0, 255, 200)
-  if rectangle.active then
-    for x = smallest(convert(rectangle.x), convert(camera:mouseX())), biggest(convert(rectangle.x), convert(camera:mouseX())) do
-      for y = smallest(convert(rectangle.y), convert(camera:mouseY())), biggest(convert(rectangle.y), convert(camera:mouseY())) do
-        love.graphics.draw(level_editor.tiles[sel_tile].image, x*tile_scale, y*tile_scale)
-      end
-    end
+  if shapes.active then
+    highlight_func[sel_shape](convert(shapes.x), convert(shapes.y), convert(camera:mouseX()), convert(camera:mouseY()), sel_tile)
   else
     love.graphics.draw(level_editor.tiles[sel_tile].image, camera:mouseX()-camera:mouseX()%tile_scale, camera:mouseY()-camera:mouseY()%tile_scale)
   end
@@ -82,19 +85,19 @@ end
 
 function love.mousepressed(x, y, button, isTouch)
   if love.keyboard.isDown("lshift") and (button==1 or button==2) then
-    rectangle.x = camera:mouseX()
-    rectangle.y = camera:mouseY()
-    rectangle.active = true
+    shapes.x = camera:mouseX()
+    shapes.y = camera:mouseY()
+    shapes.active = true
   end
 end
 
 function love.mousereleased(x, y, button, isTouch)
-  if love.keyboard.isDown("lshift") and button==1 and rectangle.active then
-    level_editor:fill(convert(rectangle.x), convert(rectangle.y), convert(camera:mouseX()), convert(camera:mouseY()), sel_tile)
-  elseif love.keyboard.isDown("lshift") and button==2  and rectangle.active then
-    level_editor:fill(convert(rectangle.x), convert(rectangle.y), convert(camera:mouseX()), convert(camera:mouseY()), nil)
+  if button==1 and shapes.active then
+    shapes_func[sel_shape](convert(shapes.x), convert(shapes.y), convert(camera:mouseX()), convert(camera:mouseY()), sel_tile)
+  elseif button==2  and shapes.active then
+    shapes_func[sel_shape](convert(shapes.x), convert(shapes.y), convert(camera:mouseX()), convert(camera:mouseY()), nil)
   end
-  rectangle.active = false
+  shapes.active = false
 end
 
 function love.wheelmoved(x, y)
@@ -108,13 +111,20 @@ function love.wheelmoved(x, y)
     end
 
     camera:scale(current_scale, current_scale)
+  elseif love.keyboard.isDown("lshift") then
+    if y > 0 then
+      sel_shape = sel_shape - 1
+    elseif y < 0 then
+      sel_shape = sel_shape + 1
+    end
+    sel_shape = (sel_shape + #shapes_func-1) % #shapes_func + 1
   else
     if y > 0 then
       sel_tile = sel_tile - 1
     elseif y < 0 then
       sel_tile = sel_tile + 1
     end
-    sel_tile = (sel_tile + 9) % #level_editor.tiles + 1
+    sel_tile = (sel_tile + #level_editor.tiles-1) % #level_editor.tiles + 1
   end
 end
 
@@ -202,10 +212,18 @@ function level_editor:add_block(x, y, id)
   map[x][y] = id
 end
 
-function level_editor:fill (x1, y1, x2, y2, id)
+function fill (x1, y1, x2, y2, id)
   for x = smallest(x1, x2), biggest(x1, x2)do
     for y = smallest(y1, y2), biggest(y1, y2) do
       level_editor:add_block(x, y, id)
+    end
+  end
+end
+
+function fill_highlight (x1, y1, x2, y2, id)
+  for x = smallest(x1, x2), biggest(x1, x2)do
+    for y = smallest(y1, y2), biggest(y1, y2) do
+      love.graphics.draw(level_editor.tiles[id].image, x*tile_scale, y*tile_scale)
     end
   end
 end
