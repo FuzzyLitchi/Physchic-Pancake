@@ -25,8 +25,11 @@ function love.load(main)
   love.keyboard.setKeyRepeat(true)
 
   --load shapes
-  table.insert(shapes_func, line)
+  table.insert(shapes_func, fill)
   table.insert(highlight_func, fill_highlight)
+
+  table.insert(shapes_func, line)
+  table.insert(highlight_func, line_highlight)
 
   --load tiles
   level_editor:add_tile(0, 0, 0, "banker.png")
@@ -242,8 +245,6 @@ end
 function line (x1, y1, x2, y2, id)
   local length = length(x1-x2, y1-y2)
   local ux, uy = (x2-x1)/length, (y2-y1)/length
-  print("This is a line")
-  print(length)
   if length == NaN then return end
   if x1>=x2 then
     if y1>=y2 then
@@ -263,6 +264,33 @@ function line (x1, y1, x2, y2, id)
     else
       for i=0, math.floor(length) do
         level_editor:add_block(math.ceil(x1+ux*i), math.ceil(y1+uy*i), id)
+      end
+    end
+  end
+end
+
+function line_highlight (x1, y1, x2, y2, id)
+  local length = length(x1-x2, y1-y2)
+  local ux, uy = (x2-x1)/length, (y2-y1)/length
+  if length == NaN then return end
+  if x1>=x2 then
+    if y1>=y2 then
+      for i=0, math.floor(length) do
+        love.graphics.draw(level_editor.tiles[id].image, math.floor(x1+ux*i), math.floor(y1+uy*i))
+      end
+    else
+      for i=0, math.floor(length) do
+        love.graphics.draw(level_editor.tiles[id].image, math.floor(x1+ux*i), math.ceil(y1+uy*i))
+      end
+    end
+  else
+    if y1>=y2 then
+      for i=0, math.floor(length) do
+        love.graphics.draw(level_editor.tiles[id].image, math.ceil(x1+ux*i), math.floor(y1+uy*i))
+      end
+    else
+      for i=0, math.floor(length) do
+        love.graphics.draw(level_editor.tiles[id].image, math.ceil(x1+ux*i), math.ceil(y1+uy*i))
       end
     end
   end
