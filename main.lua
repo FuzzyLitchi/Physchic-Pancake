@@ -249,21 +249,21 @@ function line (x1, y1, x2, y2, id)
   if x1>=x2 then
     if y1>=y2 then
       for i=0, math.floor(length) do
-        level_editor:add_block(math.floor(x1+ux*i), math.floor(y1+uy*i), id)
+        level_editor:add_block(math.floor(x1+ux*i)*tile_scale, math.floor(y1+uy*i)*tile_scale, id)
       end
     else
       for i=0, math.floor(length) do
-        level_editor:add_block(math.floor(x1+ux*i), math.ceil(y1+uy*i), id)
+        level_editor:add_block(math.floor(x1+ux*i)*tile_scale, math.ceil(y1+uy*i)*tile_scale, id)
       end
     end
   else
     if y1>=y2 then
       for i=0, math.floor(length) do
-        level_editor:add_block(math.ceil(x1+ux*i), math.floor(y1+uy*i), id)
+        level_editor:add_block(math.ceil(x1+ux*i)*tile_scale, math.floor(y1+uy*i)*tile_scale, id)
       end
     else
       for i=0, math.floor(length) do
-        level_editor:add_block(math.ceil(x1+ux*i), math.ceil(y1+uy*i), id)
+        level_editor:add_block(math.ceil(x1+ux*i)*tile_scale, math.ceil(y1+uy*i)*tile_scale, id)
       end
     end
   end
