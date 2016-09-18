@@ -17,7 +17,15 @@ function Camera:make(startX, startY, startScaleX, startScaleY, startRotation)
   end
 
   function camera:windowSize()
-    return love.window:getWidth() * self.scaleX, love.window.getHeight() * self.scaleY
+    return love.graphics.getWidth() * self.scaleX, love.graphics.getHeight() * self.scaleY
+  end
+
+  function camera:getWidth()
+    return love.graphics.getWidth() * self.scaleX
+  end
+
+  function camera:getHeight()
+    return love.graphics.getHeight() * self.scaleY
   end
 
   function camera:move(dx, dy)

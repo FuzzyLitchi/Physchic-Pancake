@@ -110,15 +110,21 @@ end
 
 function love.wheelmoved(x, y)
   current_scale = 1
+  scale_factor = 0.04
   if love.keyboard.isDown("lctrl") then
     --zoom camera
-    if y > 0 then
-      current_scale = current_scale - 0.04
-    elseif y < 0 then
-      current_scale = current_scale + 0.04
+    if y < 0 then
+      scale_factor = -scale_factor
     end
+    current_scale = 1-scale_factor
 
-    camera:scale(current_scale, current_scale)
+    local x0, y0 = love.mouse.getPosition()
+    x0 = (x0/love.graphics.getWidth())*scale_factor*camera:getWidth()
+    y0 = (y0/love.graphics.getHeight())*scale_factor*camera:getHeight()
+    print(x0, y0)
+    camera:scale(current_scale)
+    camera:move(x0, y0)
+
   elseif love.keyboard.isDown("lshift") then
     if y > 0 then
       sel_shape = sel_shape - 1
