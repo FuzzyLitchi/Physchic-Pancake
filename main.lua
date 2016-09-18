@@ -258,7 +258,10 @@ end
 function line (x1, y1, x2, y2, id)
   local length = length(x1-x2, y1-y2)
   local ux, uy = (x2-x1)/length, (y2-y1)/length
-  if length == NaN then return end
+  if length == 0 then
+    level_editor:add_block(x1, y1, id)
+    return
+  end
   if x1>=x2 then
     if y1>=y2 then
       for i=0, math.floor(length) do
@@ -285,7 +288,10 @@ end
 function line_highlight (x1, y1, x2, y2, id)
   local length = length(x1-x2, y1-y2)
   local ux, uy = (x2-x1)/length, (y2-y1)/length
-  if length == NaN then return end
+  if length == 0 then
+    love.graphics.draw(level_editor.tiles[id].image, x1, y1)
+    return
+  end
   if x1>=x2 then
     if y1>=y2 then
       for i=0, math.floor(length) do
