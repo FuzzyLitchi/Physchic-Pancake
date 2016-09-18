@@ -83,8 +83,12 @@ function love.draw()
 
   camera:unset()
 
-  love.graphics.setColor(255, 0, 100)
-  love.graphics.printf(level_editor.map_name, 0, 0, love.graphics.getWidth())
+  if level_editor.is_typing then
+    love.graphics.setColor(255, 120, 120, 200)
+    love.graphics.rectangle("fill", love.graphics.getWidth()/2-150, love.graphics.getHeight()/2-40-25, 300, 50)
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.printf(level_editor.map_name, love.graphics.getWidth()/2-100, love.graphics.getHeight()/2-60, 200)
+  end
 end
 
 function love.mousepressed(x, y, button, isTouch)
