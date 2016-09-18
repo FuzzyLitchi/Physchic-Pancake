@@ -25,7 +25,7 @@ function love.load(main)
   love.keyboard.setKeyRepeat(true)
 
   --load shapes
-  table.insert(shapes_func, fill)
+  table.insert(shapes_func, line)
   table.insert(highlight_func, fill_highlight)
 
   --load tiles
@@ -195,6 +195,17 @@ function biggest (v1, v2)
   return v2
 end
 
+function sort (a, b)
+  if a >= b then
+    return a, b
+  end
+  return b, a
+end
+
+function length (x, y)
+  return math.sqrt(x*x+y*y)
+end
+
 function level_editor:add_tile(r, g, b, image)
   local temp_image = love.graphics.newImage("src/" .. image)
   table.insert(level_editor.tiles, {r=r, g=g, b=b, image = temp_image, width = tile_scale, height = tile_scale})
@@ -224,6 +235,35 @@ function fill_highlight (x1, y1, x2, y2, id)
   for x = smallest(x1, x2), biggest(x1, x2)do
     for y = smallest(y1, y2), biggest(y1, y2) do
       love.graphics.draw(level_editor.tiles[id].image, x*tile_scale, y*tile_scale)
+    end
+  end
+end
+
+function line (x1, y1, x2, y2, id)
+  local length = length(x1-x2, y1-y2)
+  local ux, uy = (x2-x1)/length, (y2-y1)/length
+  print("This is a line")
+  print(length)
+  if length == NaN then return end
+  if x1>=x2 then
+    if y1>=y2 then
+      for i=0, math.floor(length) do
+        level_editor:add_block(math.floor(x1+ux*i), math.floor(y1+uy*i), id)
+      end
+    else
+      for i=0, math.floor(length) do
+        level_editor:add_block(math.floor(x1+ux*i), math.ceil(y1+uy*i), id)
+      end
+    end
+  else
+    if y1>=y2 then
+      for i=0, math.floor(length) do
+        level_editor:add_block(math.ceil(x1+ux*i), math.floor(y1+uy*i), id)
+      end
+    else
+      for i=0, math.floor(length) do
+        level_editor:add_block(math.ceil(x1+ux*i), math.ceil(y1+uy*i), id)
+      end
     end
   end
 end
