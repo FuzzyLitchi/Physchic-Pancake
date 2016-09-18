@@ -289,7 +289,7 @@ function line_highlight (x1, y1, x2, y2, id)
   local length = length(x1-x2, y1-y2)
   local ux, uy = (x2-x1)/length, (y2-y1)/length
   if length == 0 then
-    love.graphics.draw(level_editor.tiles[id].image, x1, y1)
+    love.graphics.draw(level_editor.tiles[id].image, x1*tile_scale, y1*tile_scale)
     return
   end
   if x1>=x2 then
