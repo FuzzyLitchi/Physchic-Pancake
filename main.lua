@@ -5,7 +5,8 @@ local level_editor =
 {boxes = {},
 tiles = {},
 oldX=0, oldY=0,
-is_loading_map = false,
+is_typing = false,
+mode = "",
 map_name = ""
 }
 
@@ -132,7 +133,7 @@ function love.wheelmoved(x, y)
 end
 
 function love.textinput(t)
-  if level_editor.is_loading_map and not first_time then
+  if level_editor.is_typing and not first_time then
     level_editor.map_name = level_editor.map_name .. t
   end
   first_time = false
@@ -140,31 +141,39 @@ end
 
 function love.keypressed(key, scancode, isrepeat)
 
-  --can be done while editing
-  if not level_editor.is_loading_map then
+  --can be done while editing map
+  if not level_editor.is_typing then
     if key == "s" and not isrepeat then
-      level_editor:save_map()
+      level_editor.is_typing = true
+      level_editor.mode = "save"
+      first_time = true
 
     elseif key == "o" and not isrepeat then
-      level_editor.is_loading_map = true
+      level_editor.is_typing = true
+      level_editor.mode = "load"
       first_time = true
     end
   end
 
   --can be done while typing in the map
-  if level_editor.is_loading_map then
+  if level_editor.is_typing then
     if key == "return" and not isrepeat then
-      if love.filesystem.exists("maps/" .. level_editor.map_name) then
-        level_editor:load_map(love.graphics.newImage("maps/" .. level_editor.map_name):getData())
-      else
-        print("WTF YOU TRYING TO READ MATE")
+      if level_editor.mode == "load" then
+        if love.filesystem.exists("maps/" .. level_editor.map_name) then
+          level_editor:load_map(love.graphics.newImage("maps/" .. level_editor.map_name):getData())
+        else
+          print("WTF YOU TRYING TO READ MATE")
+        end
+      elseif level_editor.mode == "save" then
+        level_editor:save_map(level_editor.map_name)
       end
       level_editor.map_name = ""
-      level_editor.is_loading_map = false
+      level_editor.mode = ""
+      level_editor.is_typing = false
 
     elseif key == "escape" then
       level_editor.map_name = ""
-      level_editor.is_loading_map = false
+      level_editor.is_typing = false
 
     elseif key == "backspace" then
       -- get the byte offset to the last UTF-8 character in the string.
@@ -296,7 +305,7 @@ function line_highlight (x1, y1, x2, y2, id)
   end
 end
 
-function level_editor:save_map()
+function level_editor:save_map(name)
   maxX, maxY = 1, 1
   for x, xv in pairs(map) do
     for y, v in pairs(xv) do
@@ -322,8 +331,7 @@ function level_editor:save_map()
   if not love.filesystem.exists("maps") then
     love.filesystem.createDirectory("maps")
   end
-
-  tempLevel:encode("png", "maps/map_".. os.time() .. ".png")
+  tempLevel:encode("png", "maps/" .. name)
 end
 
 function level_editor:load_map(image_data)
