@@ -36,6 +36,8 @@ function love.load(main)
   level_editor:add_tile(0, 0, 0, "banker.png")
   level_editor:add_tile(255, 255, 0, "julian.png")
   level_editor:add_tile(0,255,255, "grass.png")
+  level_editor:add_tile(255,0,0, "dirt.png")
+  level_editor:add_tile(0,0,255, "stone.png")
 
 end
 
