@@ -35,6 +35,8 @@ function love.load(main)
   --load tiles
   level_editor:add_tile(0, 0, 0, "banker.png")
   level_editor:add_tile(255, 255, 0, "julian.png")
+  level_editor:add_tile(0,255,255, "grass.png")
+
 end
 
 function love.update()
@@ -70,7 +72,8 @@ function love.draw()
 
   for x, xv in pairs(map) do
     for y, v in pairs(xv) do
-      love.graphics.draw(level_editor.tiles[v].image, x*tile_scale-tile_scale, y*tile_scale-tile_scale)
+      local image = level_editor.tiles[v].image
+      love.graphics.draw(image, x*tile_scale-tile_scale, y*tile_scale-tile_scale, nil, 8/image:getWidth(), 8/image:getWidth())
     end
   end
 
@@ -78,7 +81,8 @@ function love.draw()
   if shapes.active then
     highlight_func[sel_shape](convert(shapes.x), convert(shapes.y), convert(camera:mouseX()), convert(camera:mouseY()), sel_tile)
   else
-    love.graphics.draw(level_editor.tiles[sel_tile].image, camera:mouseX()-camera:mouseX()%tile_scale, camera:mouseY()-camera:mouseY()%tile_scale)
+    local image = level_editor.tiles[sel_tile].image
+    love.graphics.draw(image, camera:mouseX()-camera:mouseX()%tile_scale, camera:mouseY()-camera:mouseY()%tile_scale, nil, 8/image:getWidth(), 8/image:getWidth())
   end
 
   camera:unset()
