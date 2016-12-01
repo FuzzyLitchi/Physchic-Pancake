@@ -260,9 +260,10 @@ function fill (x1, y1, x2, y2, id)
 end
 
 function fill_highlight (x1, y1, x2, y2, id)
+  local image = level_editor.tiles[id].image
   for x = smallest(x1, x2), biggest(x1, x2)do
     for y = smallest(y1, y2), biggest(y1, y2) do
-      love.graphics.draw(level_editor.tiles[id].image, x*tile_scale, y*tile_scale)
+      love.graphics.draw(image, x*tile_scale, y*tile_scale, nil, 8/image:getWidth(), 8/image:getWidth())
     end
   end
 end
@@ -298,6 +299,7 @@ function line (x1, y1, x2, y2, id)
 end
 
 function line_highlight (x1, y1, x2, y2, id)
+  local image = level_editor.tiles[id].image
   local length = length(x1-x2, y1-y2)
   local ux, uy = (x2-x1)/length, (y2-y1)/length
   if length == 0 then
@@ -307,21 +309,21 @@ function line_highlight (x1, y1, x2, y2, id)
   if x1>=x2 then
     if y1>=y2 then
       for i=0, math.floor(length) do
-        love.graphics.draw(level_editor.tiles[id].image, math.floor(x1+ux*i)*tile_scale, math.floor(y1+uy*i)*tile_scale)
+        love.graphics.draw(level_editor.tiles[id].image, math.floor(x1+ux*i)*tile_scale, math.floor(y1+uy*i)*tile_scale, nil, 8/image:getWidth(), 8/image:getWidth())
       end
     else
       for i=0, math.floor(length) do
-        love.graphics.draw(level_editor.tiles[id].image, math.floor(x1+ux*i)*tile_scale, math.ceil(y1+uy*i)*tile_scale)
+        love.graphics.draw(level_editor.tiles[id].image, math.floor(x1+ux*i)*tile_scale, math.ceil(y1+uy*i)*tile_scale, nil, 8/image:getWidth(), 8/image:getWidth())
       end
     end
   else
     if y1>=y2 then
       for i=0, math.floor(length) do
-        love.graphics.draw(level_editor.tiles[id].image, math.ceil(x1+ux*i)*tile_scale, math.floor(y1+uy*i)*tile_scale)
+        love.graphics.draw(level_editor.tiles[id].image, math.ceil(x1+ux*i)*tile_scale, math.floor(y1+uy*i)*tile_scale, nil, 8/image:getWidth(), 8/image:getWidth())
       end
     else
       for i=0, math.floor(length) do
-        love.graphics.draw(level_editor.tiles[id].image, math.ceil(x1+ux*i)*tile_scale, math.ceil(y1+uy*i)*tile_scale)
+        love.graphics.draw(level_editor.tiles[id].image, math.ceil(x1+ux*i)*tile_scale, math.ceil(y1+uy*i)*tile_scale, nil, 8/image:getWidth(), 8/image:getWidth())
       end
     end
   end
