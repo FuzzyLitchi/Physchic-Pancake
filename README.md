@@ -16,7 +16,7 @@ Controls:
 
 Every block has an RGB value that represents it, you can then in your game, load that block based on the stored RGB value.
 
-To add a block, simply place a square (This means that both sides are equal length) picture in the src direcory. Then add the block in the code and give it an RGB value, here is an example. `level_editor:add_tile(0, 0, 0, "banker.png")` the first 3 values are RGB and the string is the name of the picture.
+To add a block, simply place a square (This means that both sides are equal length) picture in the img direcory. Then add the block in the code and give it an RGB value, here is an example. `level_editor:add_tile(0, 0, 0, "banker.png")` the first 3 values are RGB and the string is the name of the picture.
 
 The fill modes are currently line and rectangle.
 

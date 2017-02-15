@@ -10,11 +10,11 @@ mode = "",
 map_name = ""
 }
 
-local sel_tile = 1
-local sel_shape = 1
-local tile_scale = 8
+local sel_tile = 1 --currently selected tile
+local sel_shape = 1 --currently selected fill shape
+local tile_scale = 8 --doesn't matter anymore
 
-local map = {}
+local map = {} --all blocks
 local shapes = {x, y, active}
 local shapes_func = {}
 local highlight_func = {}
@@ -330,31 +330,58 @@ function line_highlight (x1, y1, x2, y2, id)
 end
 
 function level_editor:save_map(name)
-  maxX, maxY = 1, 1
+
+  --maxX, maxY = 0,0
+  --minX, minY = 0,0
+
   for x, xv in pairs(map) do
     for y, v in pairs(xv) do
-      if x>maxX then
+      maxX, minX = x,x
+      maxY, minY = y,y
+    end
+  end
+
+  for x, xv in pairs(map) do
+    for y, v in pairs(xv) do
+      print(x,y)
+      if x > maxX then
         maxX = x
+      elseif x < minX then
+        minX = x
       end
-      if y>maxY then
+
+      if y > maxY then
         maxY = y
+      elseif y < minY then
+        minY = y
       end
     end
   end
-  tempLevel = love.image.newImageData(maxX, maxY)
-  for x = 1, maxX do
-    for y = 1, maxY do
-      tempLevel:setPixel(x-1, y-1, 255, 255, 255)
+  print("max: "..maxX,maxY)
+  print("min: "..minX,minY)
+  sizeX = maxX - minX + 1
+  sizeY = maxY - minY + 1
+  print("size: " .. sizeX, sizeY)
+  tempLevel = love.image.newImageData(sizeX, sizeY)
+
+  for x = 0, sizeX-1 do
+    for y = 0, sizeY-1 do
+      print("clear: " .. x, y)
+      tempLevel:setPixel(x, y, 255, 255, 255)
     end
   end
+
   for x, xv in pairs(map) do
     for y, v in pairs(xv) do
-      tempLevel:setPixel(x-1, y-1, level_editor.tiles[v].r, level_editor.tiles[v].g, level_editor.tiles[v].b)
+      print("place: " .. x-minX, y-minY)
+      tempLevel:setPixel(x-minX, y-minY, level_editor.tiles[v].r, level_editor.tiles[v].g, level_editor.tiles[v].b)
     end
   end
+
   if not love.filesystem.exists("maps") then
     love.filesystem.createDirectory("maps")
   end
+
   tempLevel:encode("png", "maps/" .. name)
 end
 
