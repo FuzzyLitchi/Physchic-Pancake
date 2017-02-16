@@ -233,6 +233,10 @@ function length (x, y)
   return math.sqrt(x*x+y*y)
 end
 
+function highlight_id(x, y, id)
+  love.graphics.draw(level_editor.tiles[id].image, x*tile_scale, y*tile_scale, nil, tile_scale/image:getWidth(), tile_scale/image:getHeight())
+end
+
 function level_editor:add_tile(r, g, b, image)
   local temp_image = love.graphics.newImage("src/" .. image)
   table.insert(level_editor.tiles, {r=r, g=g, b=b, image = temp_image, width = tile_scale, height = tile_scale})
@@ -262,11 +266,12 @@ function fill_highlight (x1, y1, x2, y2, id)
   local image = level_editor.tiles[id].image
   for x = smallest(x1, x2), biggest(x1, x2)do
     for y = smallest(y1, y2), biggest(y1, y2) do
-      love.graphics.draw(image, x*tile_scale, y*tile_scale, nil, 8/image:getWidth(), 8/image:getWidth())
+      highlight_id(x, y, id)
     end
   end
 end
 
+--bad code plz help
 function line (x1, y1, x2, y2, id)
   local length = length(x1-x2, y1-y2)
   local ux, uy = (x2-x1)/length, (y2-y1)/length
@@ -297,6 +302,7 @@ function line (x1, y1, x2, y2, id)
   end
 end
 
+--this is really bad code
 function line_highlight (x1, y1, x2, y2, id)
   local image = level_editor.tiles[id].image
   local length = length(x1-x2, y1-y2)
