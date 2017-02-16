@@ -127,7 +127,6 @@ function love.wheelmoved(x, y)
     local x0, y0 = love.mouse.getPosition()
     x0 = (x0/love.graphics.getWidth())*scale_factor*camera:getWidth()
     y0 = (y0/love.graphics.getHeight())*scale_factor*camera:getHeight()
-    print(x0, y0)
     camera:scale(current_scale)
     camera:move(x0, y0)
 
@@ -178,7 +177,7 @@ function love.keypressed(key, scancode, isrepeat)
         if love.filesystem.exists("maps/" .. level_editor.map_name) then
           level_editor:load_map(love.graphics.newImage("maps/" .. level_editor.map_name):getData())
         else
-          print("WTF YOU TRYING TO READ MATE")
+          print("No such file.")
         end
       elseif level_editor.mode == "save" then
         level_editor:save_map(level_editor.map_name)
@@ -343,7 +342,7 @@ function level_editor:save_map(name)
 
   for x, xv in pairs(map) do
     for y, v in pairs(xv) do
-      print(x,y)
+      --print(x,y)
       if x > maxX then
         maxX = x
       elseif x < minX then
@@ -357,23 +356,23 @@ function level_editor:save_map(name)
       end
     end
   end
-  print("max: "..maxX,maxY)
-  print("min: "..minX,minY)
+  --print("max: "..maxX,maxY)
+  --print("min: "..minX,minY)
   sizeX = maxX - minX + 1
   sizeY = maxY - minY + 1
-  print("size: " .. sizeX, sizeY)
+  --print("size: " .. sizeX, sizeY)
   tempLevel = love.image.newImageData(sizeX, sizeY)
 
   for x = 0, sizeX-1 do
     for y = 0, sizeY-1 do
-      print("clear: " .. x, y)
+      --print("clear: " .. x, y)
       tempLevel:setPixel(x, y, 255, 255, 255)
     end
   end
 
   for x, xv in pairs(map) do
     for y, v in pairs(xv) do
-      print("place: " .. x-minX, y-minY)
+      --print("place: " .. x-minX, y-minY)
       tempLevel:setPixel(x-minX, y-minY, level_editor.tiles[v].r, level_editor.tiles[v].g, level_editor.tiles[v].b)
     end
   end
