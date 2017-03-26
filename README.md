@@ -1,4 +1,4 @@
-# Physchic-Pancake
+# Psychic-Pancake
 
 ### A modular lua love2d level editor
 
